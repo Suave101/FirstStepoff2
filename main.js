@@ -7,6 +7,7 @@ function resizeCanvas() {
 const canvas = document.getElementById("main");
 const xCordinateLabel = document.getElementById("cursorCordinateX");
 const yCordinateLabel = document.getElementById("cursorCordinateY");
+const cursorItemSelector = document.getElementById("cursorItem");
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
 const ctx = canvas.getContext("2d", { alpha: false });
@@ -21,6 +22,7 @@ var canvasMouseX = new Number(0);
 var canvasMouseY = new Number(0);
 var stepsPer5Yards = 8;  // If Change Reset yardLineArrayinSteps Var
 var yardLineArrayinSteps = [yardsToSteps(10), yardsToSteps(15), yardsToSteps(20), yardsToSteps(25), yardsToSteps(30), yardsToSteps(35), yardsToSteps(40), yardsToSteps(45), yardsToSteps(50), yardsToSteps(55), yardsToSteps(60), yardsToSteps(65), yardsToSteps(70), yardsToSteps(75), yardsToSteps(80), yardsToSteps(85), yardsToSteps(90)];
+var hashArrayinSteps = [0, yardsToSteps(17.5), yardsToSteps(35), yardsToSteps(53.125)];
 
 function stepsToHumanReadableCordsX(steps) {
     let yardline = yardLineArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
@@ -41,27 +43,41 @@ function stepsToHumanReadableCordsX(steps) {
         return "On the " + String(stepToYard(yardline) - 10);
     }
 }
-
+function stepsToHumanReadableCordsY(steps) {
+    let hash = hashArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
+    let strHash = "";
+    if (hash == 0) {
+        strHash = "back sideline";
+    } else if (hash == yardsToSteps(17.5)) {
+        strHash = "back hash";
+    } else if (hash == yardsToSteps(35)) {
+        strHash = "front hash";
+    } else {
+        strHash = "front sideline";
+    }
+    if (steps > hash) {
+        return String(steps - hash) + " infront of the " + strHash
+    } else if (steps < hash) {
+        return String(hash - steps) + " behind the " + strHash
+    } else {
+        return "On the " + strHash
+    }
+}
 function yardsToPixles(number) {
     return number * canvas.width/120;
 }
-
 function stepsToPixles(steps) {
     return steps * canvas.width/(24*stepsPer5Yards);
 }
-
 function pixleToClosestStep(y) {
     return Math.round(y/(canvas.width/(24*stepsPer5Yards)));
 }
-
 function stepToYard(steps) {
     return steps * (5/stepsPer5Yards)
 }
-
 function yardsToSteps(yards) {
     return yards/(5/stepsPer5Yards);
 }
-
 function drawYardlines() {
     ctx.strokeStyle = yardlineColor;
     for (let i = 10; i < 111; i = i + 5) {
@@ -71,7 +87,6 @@ function drawYardlines() {
         ctx.stroke();
     }
 }
-
 function drawHashes() {
     ctx.strokeStyle = hashColor;
     for (let i = 10; i < 111; i++) {
@@ -87,7 +102,6 @@ function drawHashes() {
         ctx.stroke();
     }
 }
-
 function drawNumbers() {
     ctx.fillStyle = numbersColor;
     for (let i = 20; i < 110; i = i + 10) {
@@ -105,20 +119,13 @@ function drawNumbers() {
         }
     }
 }
-
-canvas.addEventListener("mousemove", function(e) { 
-    var cRect = canvas.getBoundingClientRect();
-    canvasMouseX = Math.round(e.clientX - cRect.left);
-    canvasMouseY = Math.round(e.clientY - cRect.top);
-});
-
 function drawMouse() {
     ctx.fillStyle = fieldCursorColor;
     ctx.beginPath();
     ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), yardsToPixles(0.5), 0, 2*Math.PI);
     ctx.fill();
     xCordinateLabel.innerText = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX));
-    yCordinateLabel.innerText = "Y Cordinate: " + String(pixleToClosestStep(canvasMouseY));
+    yCordinateLabel.innerText = "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
 }
 
 function drawLoop() {
@@ -133,3 +140,13 @@ function drawLoop() {
 }
 
 setInterval(drawLoop, loopRate);
+
+cursorItemSelector.addEventListener("change", function(e) { 
+    console.log(cursorItemSelector.value);
+});
+
+canvas.addEventListener("mousemove", function(e) { 
+    var cRect = canvas.getBoundingClientRect();
+    canvasMouseX = Math.round(e.clientX - cRect.left);
+    canvasMouseY = Math.round(e.clientY - cRect.top);
+});

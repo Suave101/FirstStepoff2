@@ -10,7 +10,18 @@
   <body>
     <canvas id="main"></canvas>
     <div id="infoPanel">
-      <div id="steps">
+      <div class="infoPanelItem">
+        <h3>Cursor Option</h3>
+        <select id="cursorItem" name="cursorItem">
+          <option value="marcher">Marcher</option>
+          <option value="circle">Circle</option>
+          <option value="arc">Arc</option>
+          <option value="line">Line</option>
+          <option value="block">Block</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div class="infoPanelItem">
         <h3>Cursor Cordinates</h3>
         <p id="cursorCordinateX"></p>
         <p id="cursorCordinateY"></p>
