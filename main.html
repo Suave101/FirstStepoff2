@@ -13,13 +13,24 @@
       <div class="infoPanelItem">
         <h3>Cursor Option</h3>
         <select id="cursorItem" name="cursorItem">
-          <option value="marcher">Marcher</option>
           <option value="circle">Circle</option>
           <option value="arc">Arc</option>
           <option value="line">Line</option>
           <option value="block">Block</option>
           <option value="custom">Custom</option>
         </select>
+        <div id="amountOfMarchers">
+          <p>Amount of Marchers: </p>
+          <input type="number" id="cursorItemMarcherCount" value="5">
+        </div>
+        <div id="radius">
+          <p>Radius (In Steps): </p>
+          <input type="number" id="cursorItemRadius" value="5">
+        </div>
+      </div>
+      <div class="infoPanelItem">
+        <h3>Object Creation Data</h3>
+        <p id="objectCreationDataObject">Click Field to Create an Object</p>
       </div>
       <div class="infoPanelItem">
         <h3>Cursor Cordinates</h3>

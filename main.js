@@ -8,6 +8,10 @@ const canvas = document.getElementById("main");
 const xCordinateLabel = document.getElementById("cursorCordinateX");
 const yCordinateLabel = document.getElementById("cursorCordinateY");
 const cursorItemSelector = document.getElementById("cursorItem");
+const marcherCountValue = document.getElementById("cursorItemMarcherCount");
+const cursorItemRadius = document.getElementById("cursorItemRadius");
+const objectCreationDataObject = document.getElementById("objectCreationDataObject");
+const radiusDiv = document.getElementById("radius");
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
 const ctx = canvas.getContext("2d", { alpha: false });
@@ -18,11 +22,20 @@ var yardlineColor = "#FFFFFF";
 var hashColor = "#FFFFFF";
 var numbersColor = "#FFFFFF";
 var fieldCursorColor = "#5000a1";
+var circleColor = "#FFFFFF";
 var canvasMouseX = new Number(0);
 var canvasMouseY = new Number(0);
 var stepsPer5Yards = 8;  // If Change Reset yardLineArrayinSteps Var
 var yardLineArrayinSteps = [yardsToSteps(10), yardsToSteps(15), yardsToSteps(20), yardsToSteps(25), yardsToSteps(30), yardsToSteps(35), yardsToSteps(40), yardsToSteps(45), yardsToSteps(50), yardsToSteps(55), yardsToSteps(60), yardsToSteps(65), yardsToSteps(70), yardsToSteps(75), yardsToSteps(80), yardsToSteps(85), yardsToSteps(90)];
 var hashArrayinSteps = [0, yardsToSteps(17.5), yardsToSteps(35), yardsToSteps(53.125)];
+var fieldObjects = {"Circles": [],"Arcs": [],"Lines": [],"Blocks": [],"Custom Objects": []};
+var cursorItemSelected = "circle";
+var currentSelectedObject = {};
+var objectSelected = false;
+var CIDs = 0;
+var AIDs = 0;
+var LIDs = 0;
+var BIDs = 0;
 
 function stepsToHumanReadableCordsX(steps) {
     let yardline = yardLineArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
@@ -126,6 +139,44 @@ function drawMouse() {
     ctx.fill();
     xCordinateLabel.innerText = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX));
     yCordinateLabel.innerText = "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
+    if (cursorItemSelected == "circle") {
+        ctx.fillStyle = circleColor;
+        ctx.beginPath();
+        ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), stepsToPixles(cursorItemRadius.value), 0, 2*Math.PI);
+        ctx.stroke();
+    }
+    // else if (cursorItemSelected == "arc") {}
+    // else if (cursorItemSelected == "line") {}
+    // else if (cursorItemSelected == "block") {}
+    // else if (cursorItemSelected == "custom") {}
+}
+function drawFieldObjects() {
+    ctx.fillStyle = circleColor;
+    for (let i = 0; i < fieldObjects.Circles.length; i++) {
+        ctx.beginPath();
+        ctx.arc(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), 0, 2*Math.PI);
+        ctx.stroke();
+    }
+}
+// var fieldObjects = {
+//     "Circles": [{"X": 0, "Y": 0, "CID": 0, "Radius": 5, "MarcherValue": 5}],
+//     "Arcs": [{"X1": 0, "Y1": 0, "X2": 0, "Y2": 0, "AID": 0, "Radius": 5, "MarcherValue": 5}],
+//     "Lines": [{"X1": 0, "Y1": 0, "X2": 0, "Y2": 0, "LID": 0, "MarcherValue": 5}],
+//     "Blocks": [{"X1": 0, "Y1": 0, "X2": 0, "Y2": 0, "X3": 0, "Y3": 0, "BID": 0, "MarcherValue": 5}],
+//     "Custom Objects": [{"TODO": "Make"}]};
+function onMouseClickCommand() {
+    console.log("Mouse Click: (" + String(canvasMouseX) + ", " + String(canvasMouseY) + ")");
+    console.log("People in Form: " + String(marcherCountValue.value));
+    if (cursorItemSelected == "circle") {
+        if (objectSelected == false) {
+            CIDs++;
+            fieldObjects.Circles.push({"X": pixleToClosestStep(structuredClone(canvasMouseX)), "Y": pixleToClosestStep(structuredClone(canvasMouseY)), "CID": structuredClone(CIDs), "Radius": structuredClone(cursorItemRadius.value), "MarcherValue": structuredClone(marcherCountValue.value)});
+        }
+    }
+    else if (cursorItemSelected == "arc") {alert("TODO: Arc Objects");objectCreationDataObject.innerText = "Select A Second Point";}
+    else if (cursorItemSelected == "line") {alert("TODO: Line Objects");}
+    else if (cursorItemSelected == "block") {alert("TODO: Block Objects");}
+    else if (cursorItemSelected == "custom") {alert("TODO: Custom Objects");}
 }
 
 function drawLoop() {
@@ -136,13 +187,30 @@ function drawLoop() {
     drawYardlines();
     drawHashes();
     drawNumbers();
+    drawFieldObjects();
     drawMouse();
 }
 
 setInterval(drawLoop, loopRate);
 
-cursorItemSelector.addEventListener("change", function(e) { 
-    console.log(cursorItemSelector.value);
+cursorItemSelector.addEventListener("change", function(e) {
+    cursorItemSelected = cursorItemSelector.value;
+    if (cursorItemSelected == "custom") {
+        objectCreationDataObject.innerText = "Select First Custom Point";
+    } else if (cursorItemSelected == "block") {
+        objectCreationDataObject.innerText = "Select First Block Point";
+    } else if (cursorItemSelected == "line") {
+        objectCreationDataObject.innerText = "Select First Line Point";
+    } else if (cursorItemSelected == "arc") {
+        objectCreationDataObject.innerText = "Select First Arc Point";
+    } else {
+        objectCreationDataObject.innerText = "Click Field to Create a Circle";
+    }
+    if (cursorItemSelected == "line" || cursorItemSelected == "block" || cursorItemSelected == "custom") {
+        radiusDiv.style.visibility = 'hidden';
+    } else {
+        radiusDiv.style.visibility = 'visible';
+    }
 });
 
 canvas.addEventListener("mousemove", function(e) { 
@@ -150,3 +218,5 @@ canvas.addEventListener("mousemove", function(e) {
     canvasMouseX = Math.round(e.clientX - cRect.left);
     canvasMouseY = Math.round(e.clientY - cRect.top);
 });
+
+canvas.addEventListener("mousedown", onMouseClickCommand)
