@@ -17,6 +17,7 @@
           <option value="arc">Arc</option>
           <option value="line">Line</option>
           <option value="block">Block</option>
+          <option  value="individual">Individual</option>
           <option value="custom">Custom</option>
         </select>
         <div id="amountOfMarchers">
@@ -26,6 +27,10 @@
         <div id="radius">
           <p>Radius (In Steps): </p>
           <input type="number" id="cursorItemRadius" value="5">
+        </div>
+        <div id="degOffset">
+          <p>Marcher Rotational Offset (In Degrees): </p>
+          <input type="number" id="cursorItemDegOffset" value="45" min="-360" max="360">
         </div>
       </div>
       <div class="infoPanelItem">
