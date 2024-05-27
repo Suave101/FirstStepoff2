@@ -55,23 +55,23 @@ var cursorMode = 0;
 
 
 function stepsToHumanReadableCordsX(steps) {
-    let yardline = yardLineArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
-    if (yardline > 50) {
-        if (steps > yardline) {
-            return String(steps - yardline) + " steps outside the " + String(50 - ((stepToYard(yardline) - 10) - 50)) + " yardline";
-        } else if (steps < yardline) {
-            return String(yardline - steps) + " steps inside the " + String(50 - ((stepToYard(yardline) - 10) - 50)) + " yardline";
-        } else {
-            return "On the " + String(50 - ((stepToYard(yardline) - 10) - 50));
-        }
-    }
-    if (steps > yardline) {
-        return String(steps - yardline) + " steps inside the " + String(stepToYard(yardline) - 10) + " yardline";
-    } else if (steps < yardline) {
-        return String(yardline - steps) + " steps outside the " + String(stepToYard(yardline) - 10) + " yardline";
-    } else {
-        return "On the " + String(stepToYard(yardline) - 10);
-    }
+    // let yardline = yardLineArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
+    // if (yardline > 50) {
+    //     if (steps > yardline) {
+    //         return String(steps - yardline) + " steps outside the " + String(50 - ((stepToYard(yardline) - 10) - 50)) + " yardline";
+    //     } else if (steps < yardline) {
+    //         return String(yardline - steps) + " steps inside the " + String(50 - ((stepToYard(yardline) - 10) - 50)) + " yardline";
+    //     } else {
+    //         return "On the " + String(50 - ((stepToYard(yardline) - 10) - 50));
+    //     }
+    // }
+    // if (steps > yardline) {
+    //     return String(steps - yardline) + " steps inside the " + String(stepToYard(yardline) - 10) + " yardline";
+    // } else if (steps < yardline) {
+    //     return String(yardline - steps) + " steps outside the " + String(stepToYard(yardline) - 10) + " yardline";
+    // } else {
+    //     return "On the " + String(stepToYard(yardline) - 10);
+    // }
 }
 function stepsToHumanReadableCordsY(steps) {
     let hash = hashArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
@@ -179,6 +179,7 @@ function drawMouse() {
     ctx.fill();
     xCordinateLabel.innerText = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX));
     yCordinateLabel.innerText = "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
+    console.log(pixleToClosestStep(canvasMouseX) + ", " + pixleToClosestStep(canvasMouseY))
     if (cursorItemSelected == "circle") {
         ctx.fillStyle = circleColor;
         ctx.beginPath();
