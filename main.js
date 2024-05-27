@@ -55,23 +55,36 @@ var cursorMode = 0;
 
 
 function stepsToHumanReadableCordsX(steps) {
-    // let yardline = yardLineArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
-    // if (yardline > 50) {
-    //     if (steps > yardline) {
-    //         return String(steps - yardline) + " steps outside the " + String(50 - ((stepToYard(yardline) - 10) - 50)) + " yardline";
-    //     } else if (steps < yardline) {
-    //         return String(yardline - steps) + " steps inside the " + String(50 - ((stepToYard(yardline) - 10) - 50)) + " yardline";
-    //     } else {
-    //         return "On the " + String(50 - ((stepToYard(yardline) - 10) - 50));
-    //     }
-    // }
-    // if (steps > yardline) {
-    //     return String(steps - yardline) + " steps inside the " + String(stepToYard(yardline) - 10) + " yardline";
-    // } else if (steps < yardline) {
-    //     return String(yardline - steps) + " steps outside the " + String(stepToYard(yardline) - 10) + " yardline";
-    // } else {
-    //     return "On the " + String(stepToYard(yardline) - 10);
-    // }
+    let referenceYardline = (Math.round((stepToYard(steps)/5))*5)-10;
+    let stageSide;
+    let insideOutside;
+    let stepsAway;
+    if (referenceYardline > 50) {
+        referenceYardline = 50 - (referenceYardline - 50)
+        stageSide = "Side 2; "
+        if (yardsToSteps((Math.round((stepToYard(steps)/5))*5)) > steps) {
+            insideOutside = "Inside the ";
+        } else if (yardsToSteps((Math.round((stepToYard(steps)/5))*5)) < steps) {
+            insideOutside = "Outside the ";
+        } else {
+            insideOutside = "On the ";
+        }
+    } else {
+        stageSide = "Side 1; "
+        if (yardsToSteps((Math.round((stepToYard(steps)/5))*5)) > steps) {
+            insideOutside = "Outside the ";
+        } else if (yardsToSteps((Math.round((stepToYard(steps)/5))*5)) < steps) {
+            insideOutside = "Inside the ";
+        } else {
+            insideOutside = "On the ";
+        }
+    }
+    if (referenceYardline < 0) {
+        insideOutside = "Outside the ";
+        referenceYardline = 0;
+    }
+    stepsAway = Math.abs(yardsToSteps((Math.round((stepToYard(steps)/5))*5)) - steps) + " Steps "
+    return stageSide + stepsAway + insideOutside + referenceYardline;
 }
 function stepsToHumanReadableCordsY(steps) {
     let hash = hashArrayinSteps.reduce(function(prev, curr) {return (Math.abs(curr - steps) < Math.abs(prev - steps) ? curr : prev);});
