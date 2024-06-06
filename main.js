@@ -318,15 +318,31 @@ setInterval(drawLoop, loopRate);
 
 circleButton.addEventListener("mouseup", function() {
     cursorItemSelected = "circle";
+    radiusDiv.style.display = "block";
+    degreeDiv.style.display = "block";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "none";
 });
 arcButton.addEventListener("mouseup", function() {
     cursorItemSelected = "arc";
+    degreeDiv.style.display = "none";
+    radiusDiv.style.display = "block";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "block";
 });
 lineButton.addEventListener("mouseup", function() {
     cursorItemSelected = "line";
+    radiusDiv.style.display = "none";
+    degreeDiv.style.display = "none";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "none";
 });
 block.addEventListener("mouseup", function() {
     cursorItemSelected = "block";
+    radiusDiv.style.display = "none";
+    degreeDiv.style.display = "none";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "none";
 });
 
 canvas.addEventListener("mousemove", function(e) { 
