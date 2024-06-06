@@ -30,29 +30,31 @@
           Block
         </button>
       </div>
-      <div class="ribbonGroup settings" id="circleSettings">
-        <label for="cursorItemRadius">Radius:</label>
-        <input type="number" id="cursorItemRadius" min="1" max="999">
-        <label for="cursorItemDegOffset">Degree Offset:</label>
-        <input type="number" id="cursorItemDegOffset" min="0" max="360">
-        <label for="cursorItemMarcherCount">Number of Marchers:</label>
-        <input type="number" id="cursorItemMarcherCount" min="3" max="1000">
-      </div>
-      <div class="ribbonGroup settings" id="arcSettings">
-        <label for="cursorItemRadius">Radius:</label>
-        <input type="number" id="cursorItemRadius" placeholder="Radius" min="1" max="999">
-        <label for="cursorItemDegOffset">Degree Offset:</label>
-        <input type="number" id="cursorItemDegOffset" placeholder="Degrees" min="0" max="360">
-        <label for="cursorItemMarcherCount">Number of Marchers:</label>
-        <input type="number" id="cursorItemMarcherCount" placeholder="# of Dots" min="3" max="1000">
-      </div>
-      <div class="ribbonGroup settings" id="lineSettings">
-        <label for="cursorItemMarcherCount">Number of Marchers:</label>
-        <input type="number" id="cursorItemMarcherCount" placeholder="# of Dots" min="3" max="1000">
-      </div>
-      <div class="ribbonGroup settings" id="blockSettings">
-        <label for="cursorItemMarcherCount">Number of Marchers:</label>
-        <input type="number" id="cursorItemMarcherCount" placeholder="# of Dots" min="4" max="1000">
+      <div class="ribbonGroup" id="settings">
+        <div id="radiusDiv">
+          <label for="cursorItemRadius">Radius:</label>
+          <input type="number" id="cursorItemRadius" min="1" max="999" value="3">
+        </div>
+        <div id="degreeDiv">
+          <label for="cursorItemDegOffset">Degree Offset:</label>
+          <input type="number" id="cursorItemDegOffset" min="0" max="360" value="0">
+        </div>
+        <div id="arcDegreeDiv">
+          <label for="arcDegree">Arc Radius:</label>
+          <input type="number" id="arcDegree" min="-360" max="360" value="180">
+        </div>
+        <div id="marchersDiv">
+          <label for="cursorItemMarcherCount">Number of Marchers:</label>
+          <input type="number" id="cursorItemMarcherCount" min="3" max="1000" value="5">
+        </div>
+        <div id="arcFlipDiv">
+          <label for="arcFlip">Flip Arc:</label>
+          <input id="arcFlip" type="checkbox">
+        </div>
+        <div id="gridLockDiv">
+          <label for="gridLock">Grid Lock:</label>
+          <input id="gridLock" type="checkbox" checked>
+        </div>
       </div>
     </div>
     <div id="canvasContainer">

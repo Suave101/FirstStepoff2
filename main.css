@@ -106,7 +106,7 @@ canvas {
     background-color: blue;
     color: antiquewhite;
 }
-.settings {
+#settings {
     margin: 0.25em;
     padding: 0.3em;
     border-radius: 1em;
@@ -115,23 +115,11 @@ canvas {
     display: flex;
     flex-wrap: nowrap;
 }
-.settings > input {
+#settings > input {
     border-radius: 1em;
     border: white solid 2px;
     margin-right: 0.5em;
 }
-.settings > label {
+#settings > label {
     margin-left: 0.5em;
-}
-#circleSettings {
-    display: block;
-}
-#arcSettings {
-    display: none;
-}
-#lineSettings {
-    display: none;
-}
-#blockSettings {
-    display: none;
 }
