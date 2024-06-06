@@ -4,6 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #008507db;
+    font-family: "Abel", sans-serif;
 }
 canvas {
     border-radius: 0.25em;
@@ -117,8 +118,10 @@ canvas {
 .settings > input {
     border-radius: 1em;
     border: white solid 2px;
-    margin-left: 0.5em;
     margin-right: 0.5em;
+}
+.settings > label {
+    margin-left: 0.5em;
 }
 #circleSettings {
     display: block;

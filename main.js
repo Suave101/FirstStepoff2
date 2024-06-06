@@ -4,18 +4,25 @@ function resizeCanvas() {
     canvas.height = canvas.width * (4/9);
 }
 
+// Write Elements
 const canvas = document.getElementById("main");
-const cursorItemSelector = document.getElementById("cursorItem");
+const floaterDiv = document.getElementById("floater");
+const circleSettings = document.getElementById("circleSettings");
+const arcSettings = document.getElementById("arcSettings");
+const lineSettings = document.getElementById("lineSettings");
+const blockSettings = document.getElementById("blockSettings");
+
+// Value Elements
 const marcherCountValue = document.getElementById("cursorItemMarcherCount");
 const cursorItemRadius = document.getElementById("cursorItemRadius");
 const cursorItemDegOffset = document.getElementById("cursorItemDegOffset");
-const radiusDiv = document.getElementById("radius");
-const degOffsetDiv = document.getElementById("degOffset");
-const floaterDiv = document.getElementById("floater");
+
+// Button Elements
 const circleButton = document.getElementById("circleButton");
 const arcButton = document.getElementById("arcButton");
 const lineButton = document.getElementById("lineButton");
 const block = document.getElementById("block");
+
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
 const ctx = canvas.getContext("2d", { alpha: false });
@@ -303,7 +310,6 @@ function drawLoop() {
 
 setInterval(drawLoop, loopRate);
 
-// cursorItemSelected = cursorItemSelector.value;
 circleButton.addEventListener("mouseup", function() {
     cursorItemSelected = "circle";
 });
