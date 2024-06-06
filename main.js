@@ -150,7 +150,25 @@ function drawYardlines() {
     }
 }
 function arcBetweenTwoPoints(x1, y1, x2, y2) {
+    ctx.strokeStyle = yardlineColor;
     ctx.beginPath();
+    if (arcFlip.checked) {
+        ctx.arc(
+            ((x1+x2)/2), // Center Point X
+            ((y1+y2)/2), // Center Point Y
+            (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
+            Math.atan(((y1-y2)/(x1-x2))), // Start Angle
+            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180) // End Angle
+        );
+    } else {
+        ctx.arc(
+            ((x1+x2)/2), // Center Point X
+            ((y1+y2)/2), // Center Point Y
+            (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
+            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180), // Start Angle
+            Math.atan(((y1-y2)/(x1-x2))) // End Angle
+        );
+    }
     ctx.stroke();
 }
 function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
