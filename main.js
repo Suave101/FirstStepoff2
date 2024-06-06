@@ -72,23 +72,23 @@ var cursorMode = 0;
 // 7: Edit mode Line (Implement Custom Menu)
 // 8: Edit mode Block (Implement Custom Menu)
 
-function arcBetweenTwoPoints(x1, y1, x2, y2) {
+function arcBetweenTwoPoints(x1, y1, x2, y2, arcDegVal, flipped) {
     ctx.strokeStyle = yardlineColor;
     ctx.beginPath();
-    if (arcFlip.checked) {
+    if (flipped) {
         ctx.arc(
             ((x1+x2)/2), // Center Point X
             ((y1+y2)/2), // Center Point Y
             (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
             Math.atan(((y1-y2)/(x1-x2))), // Start Angle
-            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180) // End Angle
+            Math.atan(((y1-y2)/(x1-x2)))+(arcDegVal * Math.PI / 180) // End Angle
         );
     } else {
         ctx.arc(
             ((x1+x2)/2), // Center Point X
             ((y1+y2)/2), // Center Point Y
             (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
-            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180), // Start Angle
+            Math.atan(((y1-y2)/(x1-x2)))+(arcDegVal * Math.PI / 180), // Start Angle
             Math.atan(((y1-y2)/(x1-x2))) // End Angle
         );
     }
@@ -131,7 +131,7 @@ function drawMouse() {
             ctx.beginPath();
             ctx.arc(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), yardsToPixles(0.5), 0, 2*Math.PI);
             ctx.fill();
-            arcBetweenTwoPoints(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)));
+            arcBetweenTwoPoints(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), arcDegree.value, arcFlip.checked);
         }
     }
     // else if (cursorItemSelected == "line") {}
@@ -174,8 +174,9 @@ function onMouseClickCommand() {
                 "X1": pointCache["X1"],
                 "Y1": pointCache["Y1"],
                 "AID": structuredClone(AIDs),
-                "Radius": structuredClone(cursorItemRadius.value),
-                "MarcherValue": structuredClone(marcherCountValue.value)
+                "ArcDegVal": structuredClone(arcDegree.value),
+                "MarcherValue": structuredClone(marcherCountValue.value),
+                "Flipped": structuredClone(arcFlip.checked)
             });
             pointCache = {};
         }
@@ -207,6 +208,11 @@ function drawFieldObjects() {
     for (let i = 0; i < fieldObjects.Circles.length; i++) {
         ctx.fillStyle = circleCenterColor;
         drawEquidistantPoints(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), Number(fieldObjects.Circles[i].MarcherValue), Number(fieldObjects.Circles[i].degOffset));
+    }
+
+    // Draw Arcs
+    for (let i = 0; i< fieldObjects.Arcs.length; i++) {
+        arcBetweenTwoPoints(stepsToPixles(fieldObjects.Arcs[i].X1), stepsToPixles(fieldObjects.Arcs[i].Y1), stepsToPixles(fieldObjects.Arcs[i].X2), stepsToPixles(fieldObjects.Arcs[i].Y2), fieldObjects.Arcs[i].ArcDegVal, fieldObjects.Arcs[i].Flipped);
     }
 }
 

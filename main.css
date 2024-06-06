@@ -89,21 +89,17 @@ canvas {
 }
 .ribbonItem {
     background-color: transparent;
-    border-left: 2px solid transparent;
-    border-top:  2px solid transparent;
-    border-right: 2px solid gray;
-    border-left:  2px solid transparent;
-    border-bottom:  2px solid transparent;
+    border: none;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
-    margin: 0px;
+    margin: 0.25em;
+    border-radius: 0.5em;
 }
 .ribbonItem:hover {
-    border: 2px solid aquamarine;
+    background-color: #f4f4f4;
 }
 .ribbonItem:active {
-    border: 2px solid black;
-    background-color: blue;
+    background-color: #3454D1;
     color: antiquewhite;
 }
 #settings {
