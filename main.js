@@ -150,9 +150,7 @@ function drawYardlines() {
     }
 }
 function arcBetweenTwoPoints(x1, y1, x2, y2) {
-    ctx.fillStyle = circleColor;
     ctx.beginPath();
-    ctx.arc(((x1+x2)/2), ((y1+y2)/2), (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, 0, Math.PI, false);
     ctx.stroke();
 }
 function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
@@ -223,7 +221,7 @@ function drawMouse() {
             ctx.beginPath();
             ctx.arc(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), yardsToPixles(0.5), 0, 2*Math.PI);
             ctx.fill();
-            arcBetweenTwoPoints(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"], stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY))));
+            arcBetweenTwoPoints(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)));
         }
     }
     // else if (cursorItemSelected == "line") {}
