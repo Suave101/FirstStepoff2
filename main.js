@@ -72,7 +72,186 @@ var cursorMode = 0;
 // 7: Edit mode Line (Implement Custom Menu)
 // 8: Edit mode Block (Implement Custom Menu)
 
+function arcBetweenTwoPoints(x1, y1, x2, y2) {
+    ctx.strokeStyle = yardlineColor;
+    ctx.beginPath();
+    if (arcFlip.checked) {
+        ctx.arc(
+            ((x1+x2)/2), // Center Point X
+            ((y1+y2)/2), // Center Point Y
+            (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
+            Math.atan(((y1-y2)/(x1-x2))), // Start Angle
+            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180) // End Angle
+        );
+    } else {
+        ctx.arc(
+            ((x1+x2)/2), // Center Point X
+            ((y1+y2)/2), // Center Point Y
+            (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
+            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180), // Start Angle
+            Math.atan(((y1-y2)/(x1-x2))) // End Angle
+        );
+    }
+    ctx.stroke();
+}
+function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
+    const angleIncrement = Math.PI * 2 / numPoints;
+    let theta = 0 + (offsetDeg*(Math.PI/180.0));
+  
+    for (let i = 0; i < numPoints; i++) {
+        const pointX = stepsToPixles(pixleToClosestStep(radius * Math.cos(theta) + centerX));
+        const pointY = stepsToPixles(pixleToClosestStep(radius * Math.sin(theta) + centerY));
+        // Draw the point (adjust width and height for point size)
+        ctx.fillStyle = circleCenterColor;
+        ctx.beginPath();
+        ctx.arc(pointX, pointY, yardsToPixles(0.5), 0, 2*Math.PI);
+        ctx.fill();
+  
+        theta += angleIncrement;
+    }
+}
 
+function drawMouse() {
+    ctx.fillStyle = fieldCursorColor;
+    ctx.beginPath();
+    ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), yardsToPixles(0.5), 0, 2*Math.PI);
+    ctx.fill();
+    floaterDiv.innerHTML = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX)) + "<br>" + "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
+    if (cursorItemSelected == "circle") {
+        ctx.fillStyle = circleColor;
+        ctx.beginPath();
+        ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), stepsToPixles(cursorItemRadius.value), 0, 2*Math.PI);
+        ctx.stroke();
+        ctx.fillStyle = circleCenterColor;
+        drawEquidistantPoints(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), stepsToPixles(cursorItemRadius.value), Number(marcherCountValue.value), Number(cursorItemDegOffset.value));
+    }
+    else if (cursorItemSelected == "arc") {
+        if (cursorMode == 1) {
+            ctx.fillStyle = fieldCursorColorSecondary;
+            ctx.beginPath();
+            ctx.arc(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), yardsToPixles(0.5), 0, 2*Math.PI);
+            ctx.fill();
+            arcBetweenTwoPoints(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)));
+        }
+    }
+    // else if (cursorItemSelected == "line") {}
+    // else if (cursorItemSelected == "block") {}
+    // else if (cursorItemSelected == "custom") {}
+    if (canvasMouseX < (canvas.width/2)) {
+        floaterDiv.style.transform = "translateX(" + (window.innerWidth - (floaterDiv.clientWidth *1.10)) + "px)";
+    } else {
+        floaterDiv.style.transform = "translateX(0px)";
+    }
+}
+
+function onMouseClickCommand() {
+    console.log("Mouse Click: (" + String(canvasMouseX) + ", " + String(canvasMouseY) + ")");
+    console.log("People in Form: " + String(marcherCountValue.value));
+    if (cursorItemSelected == "circle") {
+        pointCache = {};
+        if (objectSelected == false) {
+            CIDs++;
+            fieldObjects.Circles.push({
+                "X": pixleToClosestStep(structuredClone(canvasMouseX)),
+                "Y": pixleToClosestStep(structuredClone(canvasMouseY)),
+                "CID": structuredClone(CIDs),
+                "Radius": structuredClone(cursorItemRadius.value),
+                "MarcherValue": structuredClone(marcherCountValue.value),
+                "degOffset": structuredClone(cursorItemDegOffset.value)
+            });
+        }
+    } else if (cursorItemSelected == "arc") {
+        if (cursorMode == 0) {
+            pointCache["X1"] = pixleToClosestStep(structuredClone(canvasMouseX));
+            pointCache["Y1"] = pixleToClosestStep(structuredClone(canvasMouseY));
+            cursorMode = 1;
+        } else if (cursorMode == 1) {
+            cursorMode = 0;
+            AIDs++;
+            fieldObjects.Arcs.push({
+                "X2": pixleToClosestStep(structuredClone(canvasMouseX)),
+                "Y2": pixleToClosestStep(structuredClone(canvasMouseY)),
+                "X1": pointCache["X1"],
+                "Y1": pointCache["Y1"],
+                "AID": structuredClone(AIDs),
+                "Radius": structuredClone(cursorItemRadius.value),
+                "MarcherValue": structuredClone(marcherCountValue.value)
+            });
+            pointCache = {};
+        }
+    } else if (cursorItemSelected == "line") {alert("TODO: Line Objects");}
+    else if (cursorItemSelected == "block") {alert("TODO: Block Objects");}
+    else if (cursorItemSelected == "custom") {alert("TODO: Custom Objects");}
+    else if (cursorItemSelected == "individual") {pointCache = {};alert("TODO: Custom Individual");}
+}
+
+
+function drawFieldObjects() {
+    // Draw Circles
+
+    ctx.fillStyle = circleColor;
+    // Draw White Circle
+    for (let i = 0; i < fieldObjects.Circles.length; i++) {
+        ctx.beginPath();
+        ctx.arc(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), 0, 2*Math.PI);
+        ctx.stroke();
+    }
+    // Draw Red Centers
+    for (let i = 0; i < fieldObjects.Circles.length; i++) {
+        ctx.fillStyle = circleCenterColor;
+        ctx.beginPath();
+        ctx.arc(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), yardsToPixles(0.5), 0, 2*Math.PI);
+        ctx.fill();
+    }
+    // Draw Marchers on Circle
+    for (let i = 0; i < fieldObjects.Circles.length; i++) {
+        ctx.fillStyle = circleCenterColor;
+        drawEquidistantPoints(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), Number(fieldObjects.Circles[i].MarcherValue), Number(fieldObjects.Circles[i].degOffset));
+    }
+}
+
+circleButton.addEventListener("mouseup", function() {
+    cursorItemSelected = "circle";
+    radiusDiv.style.display = "block";
+    degreeDiv.style.display = "block";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "none";
+});
+arcButton.addEventListener("mouseup", function() {
+    cursorItemSelected = "arc";
+    degreeDiv.style.display = "none";
+    radiusDiv.style.display = "block";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "block";
+});
+lineButton.addEventListener("mouseup", function() {
+    cursorItemSelected = "line";
+    radiusDiv.style.display = "none";
+    degreeDiv.style.display = "none";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "none";
+});
+block.addEventListener("mouseup", function() {
+    cursorItemSelected = "block";
+    radiusDiv.style.display = "none";
+    degreeDiv.style.display = "none";
+    marchersDiv.style.display = "block";
+    arcDegreeDiv.style.display = "none";
+});
+
+canvas.addEventListener("mousemove", function(e) { 
+    var cRect = canvas.getBoundingClientRect();
+    canvasMouseX = Math.round(e.clientX - cRect.left);
+    canvasMouseY = Math.round(e.clientY - cRect.top);
+});
+
+canvas.addEventListener("mousedown", onMouseClickCommand);
+
+document.addEventListener("keyup", function(e) {
+    if (e.key === 'f' || e.key === 'F') {
+        arcFlip.checked = !arcFlip.checked;
+      }
+});
 function stepsToHumanReadableCordsX(steps) {
     let referenceYardline = (Math.round((stepToYard(steps)/5))*5)-10;
     let stageSide;
@@ -149,44 +328,7 @@ function drawYardlines() {
         ctx.stroke();
     }
 }
-function arcBetweenTwoPoints(x1, y1, x2, y2) {
-    ctx.strokeStyle = yardlineColor;
-    ctx.beginPath();
-    if (arcFlip.checked) {
-        ctx.arc(
-            ((x1+x2)/2), // Center Point X
-            ((y1+y2)/2), // Center Point Y
-            (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
-            Math.atan(((y1-y2)/(x1-x2))), // Start Angle
-            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180) // End Angle
-        );
-    } else {
-        ctx.arc(
-            ((x1+x2)/2), // Center Point X
-            ((y1+y2)/2), // Center Point Y
-            (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, // Radius
-            Math.atan(((y1-y2)/(x1-x2)))+(arcDegree.value * Math.PI / 180), // Start Angle
-            Math.atan(((y1-y2)/(x1-x2))) // End Angle
-        );
-    }
-    ctx.stroke();
-}
-function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
-    const angleIncrement = Math.PI * 2 / numPoints;
-    let theta = 0 + (offsetDeg*(Math.PI/180.0));
-  
-    for (let i = 0; i < numPoints; i++) {
-        const pointX = stepsToPixles(pixleToClosestStep(radius * Math.cos(theta) + centerX));
-        const pointY = stepsToPixles(pixleToClosestStep(radius * Math.sin(theta) + centerY));
-        // Draw the point (adjust width and height for point size)
-        ctx.fillStyle = circleCenterColor;
-        ctx.beginPath();
-        ctx.arc(pointX, pointY, yardsToPixles(0.5), 0, 2*Math.PI);
-        ctx.fill();
-  
-        theta += angleIncrement;
-    }
-}
+
 function drawHashes() {
     ctx.strokeStyle = hashColor;
     for (let i = 10; i < 111; i++) {
@@ -219,102 +361,6 @@ function drawNumbers() {
         }
     }
 }
-function drawMouse() {
-    ctx.fillStyle = fieldCursorColor;
-    ctx.beginPath();
-    ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), yardsToPixles(0.5), 0, 2*Math.PI);
-    ctx.fill();
-    floaterDiv.innerHTML = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX)) + "<br>" + "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
-    if (cursorItemSelected == "circle") {
-        ctx.fillStyle = circleColor;
-        ctx.beginPath();
-        ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), stepsToPixles(cursorItemRadius.value), 0, 2*Math.PI);
-        ctx.stroke();
-        ctx.fillStyle = circleCenterColor;
-        drawEquidistantPoints(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), stepsToPixles(cursorItemRadius.value), Number(marcherCountValue.value), Number(cursorItemDegOffset.value));
-    }
-    else if (cursorItemSelected == "arc") {
-        if (cursorMode == 1) {
-            ctx.fillStyle = fieldCursorColorSecondary;
-            ctx.beginPath();
-            ctx.arc(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), yardsToPixles(0.5), 0, 2*Math.PI);
-            ctx.fill();
-            arcBetweenTwoPoints(stepsToPixles(pointCache["X1"]), stepsToPixles(pointCache["Y1"]), stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)));
-        }
-    }
-    // else if (cursorItemSelected == "line") {}
-    // else if (cursorItemSelected == "block") {}
-    // else if (cursorItemSelected == "custom") {}
-    if (canvasMouseX < (canvas.width/2)) {
-        floaterDiv.style.transform = "translateX(" + (window.innerWidth - (floaterDiv.clientWidth *1.10)) + "px)";
-    } else {
-        floaterDiv.style.transform = "translateX(0px)";
-    }
-}
-function drawFieldObjects() {
-    // Draw Circles
-
-    ctx.fillStyle = circleColor;
-    // Draw White Circle
-    for (let i = 0; i < fieldObjects.Circles.length; i++) {
-        ctx.beginPath();
-        ctx.arc(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), 0, 2*Math.PI);
-        ctx.stroke();
-    }
-    // Draw Red Centers
-    for (let i = 0; i < fieldObjects.Circles.length; i++) {
-        ctx.fillStyle = circleCenterColor;
-        ctx.beginPath();
-        ctx.arc(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), yardsToPixles(0.5), 0, 2*Math.PI);
-        ctx.fill();
-    }
-    // Draw Marchers on Circle
-    for (let i = 0; i < fieldObjects.Circles.length; i++) {
-        ctx.fillStyle = circleCenterColor;
-        drawEquidistantPoints(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), Number(fieldObjects.Circles[i].MarcherValue), Number(fieldObjects.Circles[i].degOffset));
-    }
-}
-
-function onMouseClickCommand() {
-    console.log("Mouse Click: (" + String(canvasMouseX) + ", " + String(canvasMouseY) + ")");
-    console.log("People in Form: " + String(marcherCountValue.value));
-    if (cursorItemSelected == "circle") {
-        pointCache = {};
-        if (objectSelected == false) {
-            CIDs++;
-            fieldObjects.Circles.push({
-                "X": pixleToClosestStep(structuredClone(canvasMouseX)),
-                "Y": pixleToClosestStep(structuredClone(canvasMouseY)),
-                "CID": structuredClone(CIDs),
-                "Radius": structuredClone(cursorItemRadius.value),
-                "MarcherValue": structuredClone(marcherCountValue.value),
-                "degOffset": structuredClone(cursorItemDegOffset.value)
-            });
-        }
-    } else if (cursorItemSelected == "arc") {
-        if (cursorMode == 0) {
-            pointCache["X1"] = pixleToClosestStep(structuredClone(canvasMouseX));
-            pointCache["Y1"] = pixleToClosestStep(structuredClone(canvasMouseY));
-            cursorMode = 1;
-        } else if (cursorMode == 1) {
-            cursorMode = 0;
-            AIDs++;
-            fieldObjects.Arcs.push({
-                "X2": pixleToClosestStep(structuredClone(canvasMouseX)),
-                "Y2": pixleToClosestStep(structuredClone(canvasMouseY)),
-                "X1": pointCache["X1"],
-                "Y1": pointCache["Y1"],
-                "AID": structuredClone(AIDs),
-                "Radius": structuredClone(cursorItemRadius.value),
-                "MarcherValue": structuredClone(marcherCountValue.value)
-            });
-            pointCache = {};
-        }
-    } else if (cursorItemSelected == "line") {alert("TODO: Line Objects");}
-    else if (cursorItemSelected == "block") {alert("TODO: Block Objects");}
-    else if (cursorItemSelected == "custom") {alert("TODO: Custom Objects");}
-    else if (cursorItemSelected == "individual") {pointCache = {};alert("TODO: Custom Individual");}
-}
 
 function drawLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -329,46 +375,3 @@ function drawLoop() {
 }
 
 setInterval(drawLoop, loopRate);
-
-circleButton.addEventListener("mouseup", function() {
-    cursorItemSelected = "circle";
-    radiusDiv.style.display = "block";
-    degreeDiv.style.display = "block";
-    marchersDiv.style.display = "block";
-    arcDegreeDiv.style.display = "none";
-});
-arcButton.addEventListener("mouseup", function() {
-    cursorItemSelected = "arc";
-    degreeDiv.style.display = "none";
-    radiusDiv.style.display = "block";
-    marchersDiv.style.display = "block";
-    arcDegreeDiv.style.display = "block";
-});
-lineButton.addEventListener("mouseup", function() {
-    cursorItemSelected = "line";
-    radiusDiv.style.display = "none";
-    degreeDiv.style.display = "none";
-    marchersDiv.style.display = "block";
-    arcDegreeDiv.style.display = "none";
-});
-block.addEventListener("mouseup", function() {
-    cursorItemSelected = "block";
-    radiusDiv.style.display = "none";
-    degreeDiv.style.display = "none";
-    marchersDiv.style.display = "block";
-    arcDegreeDiv.style.display = "none";
-});
-
-canvas.addEventListener("mousemove", function(e) { 
-    var cRect = canvas.getBoundingClientRect();
-    canvasMouseX = Math.round(e.clientX - cRect.left);
-    canvasMouseY = Math.round(e.clientY - cRect.top);
-});
-
-canvas.addEventListener("mousedown", onMouseClickCommand);
-
-document.addEventListener("keyup", function(e) {
-    if (e.key === 'f' || e.key === 'F') {
-        arcFlip.checked = !arcFlip.checked;
-      }
-});
