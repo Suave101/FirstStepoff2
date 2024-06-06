@@ -1,12 +1,10 @@
 
 function resizeCanvas() {
-    canvas.width = Number(window.innerWidth * 0.98);
+    canvas.width = Number(window.innerWidth * 0.80);
     canvas.height = canvas.width * (4/9);
 }
 
 const canvas = document.getElementById("main");
-const xCordinateLabel = document.getElementById("cursorCordinateX");
-const yCordinateLabel = document.getElementById("cursorCordinateY");
 const cursorItemSelector = document.getElementById("cursorItem");
 const marcherCountValue = document.getElementById("cursorItemMarcherCount");
 const cursorItemRadius = document.getElementById("cursorItemRadius");
@@ -14,6 +12,11 @@ const cursorItemDegOffset = document.getElementById("cursorItemDegOffset");
 const objectCreationDataObject = document.getElementById("objectCreationDataObject");
 const radiusDiv = document.getElementById("radius");
 const degOffsetDiv = document.getElementById("degOffset");
+const floaterDiv = document.getElementById("floater");
+const circleButton = document.getElementById("circleButton");
+const arcButton = document.getElementById("arcButton");
+const lineButton = document.getElementById("lineButton");
+const block = document.getElementById("block");
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
 const ctx = canvas.getContext("2d", { alpha: false });
@@ -42,6 +45,7 @@ var LIDs = 0; // Line ID's
 var BIDs = 0; // Block ID's
 var pointCache = {};
 var cursorMode = 0;
+// TODO: Make a second canvas to go under the main canvas to increase efficiency of code
 // 0: Free click because no action initiated (Always when Circle or Individual Mode. When esc pressed, all actions canceled and
 //    Mode is reset to 0)
 // 1: Arc Second Point is to be selected
@@ -142,8 +146,8 @@ function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
     let theta = 0 + (offsetDeg*(Math.PI/180.0));
   
     for (let i = 0; i < numPoints; i++) {
-        const pointX = radius * Math.cos(theta) + centerX;
-        const pointY = radius * Math.sin(theta) + centerY;
+        const pointX = stepsToPixles(pixleToClosestStep(radius * Math.cos(theta) + centerX));
+        const pointY = stepsToPixles(pixleToClosestStep(radius * Math.sin(theta) + centerY));
         // Draw the point (adjust width and height for point size)
         ctx.fillStyle = circleCenterColor;
         ctx.beginPath();
@@ -152,7 +156,7 @@ function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
   
         theta += angleIncrement;
     }
-  }
+}
 function drawHashes() {
     ctx.strokeStyle = hashColor;
     for (let i = 10; i < 111; i++) {
@@ -190,9 +194,7 @@ function drawMouse() {
     ctx.beginPath();
     ctx.arc(stepsToPixles(pixleToClosestStep(canvasMouseX)), stepsToPixles(pixleToClosestStep(canvasMouseY)), yardsToPixles(0.5), 0, 2*Math.PI);
     ctx.fill();
-    xCordinateLabel.innerText = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX));
-    yCordinateLabel.innerText = "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
-    console.log(pixleToClosestStep(canvasMouseX) + ", " + pixleToClosestStep(canvasMouseY))
+    floaterDiv.innerHTML = "X Cordinate: " + stepsToHumanReadableCordsX(pixleToClosestStep(canvasMouseX)) + "<br>" + "Y Cordinate: " + stepsToHumanReadableCordsY(pixleToClosestStep(canvasMouseY));
     if (cursorItemSelected == "circle") {
         ctx.fillStyle = circleColor;
         ctx.beginPath();
@@ -213,6 +215,11 @@ function drawMouse() {
     // else if (cursorItemSelected == "line") {}
     // else if (cursorItemSelected == "block") {}
     // else if (cursorItemSelected == "custom") {}
+    if (canvasMouseX < (canvas.width/2)) {
+        floaterDiv.style.transform = "translateX(" + (window.innerWidth - (floaterDiv.clientWidth *1.10)) + "px)";
+    } else {
+        floaterDiv.style.transform = "translateX(0px)";
+    }
 }
 function drawFieldObjects() {
     // Draw Circles
@@ -238,19 +245,7 @@ function drawFieldObjects() {
         drawEquidistantPoints(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), Number(fieldObjects.Circles[i].MarcherValue), Number(fieldObjects.Circles[i].degOffset));
     }
 }
-// var fieldObjects = {
-//     "Circles": [{"X": 0, "Y": 0, "CID": 0, "Radius": 5, "MarcherValue": 5, "degOffset": 80}],
-//     "Arcs": [{"X1": 0, "Y1": 0, "X2": 0, "Y2": 0, "AID": 0, "Radius": 5, "MarcherValue": 5}],
-//     "Lines": [{"X1": 0, "Y1": 0, "X2": 0, "Y2": 0, "LID": 0, "MarcherValue": 5}],
-//     "Blocks": [{"X1": 0, "Y1": 0, "X2": 0, "Y2": 0, "X3": 0, "Y3": 0, "BID": 0, "MarcherValue": 5}],
-//     "Custom Objects": [{"TODO": "Make"}]};
-// var cursorMode = 0;
-// 0: Free click because no action initiated (Always when Circle or Individual Mode. When esc pressed, all actions canceled and
-//    Mode is reset to 0)
-// 1: Arc Second Point is to be selected
-// 2: Line Second Point is to be selected
-// 3: Block Second Point is to be selected
-// 4: Block Third Point is to be selected
+
 function onMouseClickCommand() {
     console.log("Mouse Click: (" + String(canvasMouseX) + ", " + String(canvasMouseY) + ")");
     console.log("People in Form: " + String(marcherCountValue.value));
@@ -308,37 +303,18 @@ function drawLoop() {
 
 setInterval(drawLoop, loopRate);
 
-cursorItemSelector.addEventListener("change", function(e) {
-    cursorItemSelected = cursorItemSelector.value;
-    if (cursorItemSelected == "custom") {
-        radiusDiv.style.display = "none";
-        degOffsetDiv.style.display = "none";
-        objectCreationDataObject.innerText = "Select First Custom Point";
-    } else if (cursorItemSelected == "block") {
-        radiusDiv.style.display = "none";
-        degOffsetDiv.style.display = "none";
-        objectCreationDataObject.innerText = "Select First Block Point";
-    } else if (cursorItemSelected == "line") {
-        radiusDiv.style.display = "none";
-        degOffsetDiv.style.display = "none";
-        objectCreationDataObject.innerText = "Select First Line Point";
-    } else if (cursorItemSelected == "arc") {
-        radiusDiv.style.display = "block";
-        degOffsetDiv.style.display = "none";
-        objectCreationDataObject.innerText = "Select First Arc Point";
-    } else if (cursorItemSelected == "individual") {
-        objectCreationDataObject.innerText = "Select A Location";
-        degOffsetDiv.style.display = "none";
-    } else {
-        radiusDiv.style.display = "block";
-        degOffsetDiv.style.display = "block";
-        objectCreationDataObject.innerText = "Click Field to Create a Circle";
-    }
-    if (cursorItemSelected == "line" || cursorItemSelected == "block" || cursorItemSelected == "custom") {
-        radiusDiv.style.visibility = 'hidden';
-    } else {
-        radiusDiv.style.visibility = 'visible';
-    }
+// cursorItemSelected = cursorItemSelector.value;
+circleButton.addEventListener("mouseup", function() {
+    cursorItemSelected = "circle";
+});
+arcButton.addEventListener("mouseup", function() {
+    cursorItemSelected = "arc";
+});
+lineButton.addEventListener("mouseup", function() {
+    cursorItemSelected = "line";
+});
+block.addEventListener("mouseup", function() {
+    cursorItemSelected = "block";
 });
 
 canvas.addEventListener("mousemove", function(e) { 
