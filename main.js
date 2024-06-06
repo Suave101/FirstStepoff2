@@ -7,15 +7,20 @@ function resizeCanvas() {
 // Write Elements
 const canvas = document.getElementById("main");
 const floaterDiv = document.getElementById("floater");
-const circleSettings = document.getElementById("circleSettings");
-const arcSettings = document.getElementById("arcSettings");
-const lineSettings = document.getElementById("lineSettings");
-const blockSettings = document.getElementById("blockSettings");
+const radiusDiv = document.getElementById("radiusDiv");
+const degreeDiv = document.getElementById("degreeDiv");
+const marchersDiv = document.getElementById("marchersDiv");
+const gridLockDiv = document.getElementById("gridLockDiv");
+const arcDegreeDiv = document.getElementById("arcDegreeDiv");
+const arcFlipDiv = document.getElementById("arcFlipDiv");
 
 // Value Elements
 const marcherCountValue = document.getElementById("cursorItemMarcherCount");
 const cursorItemRadius = document.getElementById("cursorItemRadius");
 const cursorItemDegOffset = document.getElementById("cursorItemDegOffset");
+const gridLock = document.getElementById("gridLock");
+const arcDegree = document.getElementById("arcDegree");
+const arcFlip = document.getElementById("arcFlip");
 
 // Button Elements
 const circleButton = document.getElementById("circleButton");
@@ -55,6 +60,7 @@ var BIDs = 0; // Block ID's
 var pointCache = {};
 var cursorMode = 0;
 // TODO: Make a second canvas to go under the main canvas to increase efficiency of code
+// TODO: Implement hints screen when loading
 // 0: Free click because no action initiated (Always when Circle or Individual Mode. When esc pressed, all actions canceled and
 //    Mode is reset to 0)
 // 1: Arc Second Point is to be selected
