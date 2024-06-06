@@ -335,4 +335,10 @@ canvas.addEventListener("mousemove", function(e) {
     canvasMouseY = Math.round(e.clientY - cRect.top);
 });
 
-canvas.addEventListener("mousedown", onMouseClickCommand)
+canvas.addEventListener("mousedown", onMouseClickCommand);
+
+document.addEventListener("keyup", function(e) {
+    if (e.key === 'f' || e.key === 'F') {
+        arcFlip.checked = !arcFlip.checked;
+      }
+});
