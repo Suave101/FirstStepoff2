@@ -154,7 +154,6 @@ function arcBetweenTwoPoints(x1, y1, x2, y2) {
     ctx.beginPath();
     ctx.arc(((x1+x2)/2), ((y1+y2)/2), (Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2)))/2, 0, Math.PI, false);
     ctx.stroke();
-    console.log("Rahh");
 }
 function drawEquidistantPoints(centerX, centerY, radius, numPoints, offsetDeg) {
     const angleIncrement = Math.PI * 2 / numPoints;
@@ -255,7 +254,6 @@ function drawFieldObjects() {
     }
     // Draw Marchers on Circle
     for (let i = 0; i < fieldObjects.Circles.length; i++) {
-        // fieldObjects.Circles[i].MarcherValue
         ctx.fillStyle = circleCenterColor;
         drawEquidistantPoints(stepsToPixles(fieldObjects.Circles[i].X), stepsToPixles(fieldObjects.Circles[i].Y), stepsToPixles(Number(fieldObjects.Circles[i].Radius)), Number(fieldObjects.Circles[i].MarcherValue), Number(fieldObjects.Circles[i].degOffset));
     }
