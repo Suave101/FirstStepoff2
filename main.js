@@ -9,7 +9,6 @@ const cursorItemSelector = document.getElementById("cursorItem");
 const marcherCountValue = document.getElementById("cursorItemMarcherCount");
 const cursorItemRadius = document.getElementById("cursorItemRadius");
 const cursorItemDegOffset = document.getElementById("cursorItemDegOffset");
-const objectCreationDataObject = document.getElementById("objectCreationDataObject");
 const radiusDiv = document.getElementById("radius");
 const degOffsetDiv = document.getElementById("degOffset");
 const floaterDiv = document.getElementById("floater");
@@ -269,10 +268,8 @@ function onMouseClickCommand() {
         if (cursorMode == 0) {
             pointCache["X1"] = pixleToClosestStep(structuredClone(canvasMouseX));
             pointCache["Y1"] = pixleToClosestStep(structuredClone(canvasMouseY));
-            objectCreationDataObject.innerText = "Select Second Arc Point";
             cursorMode = 1;
         } else if (cursorMode == 1) {
-            objectCreationDataObject.innerText = "Select First Arc Point";
             cursorMode = 0;
             AIDs++;
             fieldObjects.Arcs.push({

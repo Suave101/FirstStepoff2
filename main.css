@@ -106,11 +106,29 @@ canvas {
     color: antiquewhite;
 }
 .settings {
-    padding: 0.5em;
+    margin: 0.25em;
+    padding: 0.3em;
+    border-radius: 1em;
+    background-color: #989898;
+    min-width: 90%;
+    display: flex;
+    flex-wrap: nowrap;
+}
+.settings > input {
+    border-radius: 1em;
+    border: white solid 2px;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
 }
 #circleSettings {
     display: block;
 }
 #arcSettings {
+    display: none;
+}
+#lineSettings {
+    display: none;
+}
+#blockSettings {
     display: none;
 }
