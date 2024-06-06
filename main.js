@@ -21,7 +21,8 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas)
 const ctx = canvas.getContext("2d", { alpha: false });
 var running = true;
-var loopRate = 10;
+
+// Settings
 var fieldColor = "#008507";
 var yardlineColor = "#FFFFFF";
 var hashColor = "#FFFFFF";
@@ -30,9 +31,11 @@ var fieldCursorColor = "#5000a1";
 var fieldCursorColorSecondary = "#d916bf";
 var circleCenterColor = "#a83232";
 var circleColor = "#FFFFFF";
+var stepsPer5Yards = 8;  // If Change Reset yardLineArrayinSteps Var
+var loopRate = 10;
+
 var canvasMouseX = new Number(0);
 var canvasMouseY = new Number(0);
-var stepsPer5Yards = 8;  // If Change Reset yardLineArrayinSteps Var
 var yardLineArrayinSteps = [yardsToSteps(10), yardsToSteps(15), yardsToSteps(20), yardsToSteps(25), yardsToSteps(30), yardsToSteps(35), yardsToSteps(40), yardsToSteps(45), yardsToSteps(50), yardsToSteps(55), yardsToSteps(60), yardsToSteps(65), yardsToSteps(70), yardsToSteps(75), yardsToSteps(80), yardsToSteps(85), yardsToSteps(90)];
 var hashArrayinSteps = [0, yardsToSteps(17.5), yardsToSteps(35), yardsToSteps(53.125)];
 var fieldObjects = {"Circles": [],"Arcs": [],"Lines": [],"Blocks": [],"Custom Objects": []};
